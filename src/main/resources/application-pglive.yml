@@ -1,0 +1,17 @@
+# This is a sample command please replace with correct command
+spring:
+  datasource:
+    url: jdbc:postgresql://172.20.11.164:5432/cgen_live
+    username: postgres
+    password: cgen@#pg2021
+    hikari:
+      schema: systempg
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+eurek:
+  client:
+    enabled: false
+server:
+  port: 57002

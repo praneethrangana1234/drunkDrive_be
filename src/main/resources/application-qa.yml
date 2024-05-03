@@ -1,0 +1,6 @@
+# This is a sample command please replace with correct command
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@172.20.10.65:1521:xe
+      username: postgres
+      password: password

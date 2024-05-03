@@ -1,0 +1,15 @@
+
+H
+java:S1168+"+Return an empty collection instead of null.(¥¹ï8ŸŠñ„¼0
+k
+java:S1612N"NReplace this lambda with method reference 'this::convertProductCoverResponse'.(€—é…8¦Šñ„¼0
+R
+java:S2209N"5Change this instance-reference to a static reference.(€—é…8ªŠñ„¼0
+V	java:S125Q"<This block of commented-out lines of code should be removed.(ñ¥ùšøÿÿÿÿ
+R	java:S125®"<This block of commented-out lines of code should be removed.(ÂİÜÂ
+O	java:S106²"9Replace this use of System.out or System.err by a logger.(øÆÊ¦
+I
+java:S1168¿"+Return an empty collection instead of null.(¥¹ï8¹Šñ„¼0
+R	java:S125ó"<This block of commented-out lines of code should be removed.(ÆÙÑ°
+T
+java:S1144¥"8Remove this unused private "convertIntermediary" method.(×ˆù±ûÿÿÿÿ

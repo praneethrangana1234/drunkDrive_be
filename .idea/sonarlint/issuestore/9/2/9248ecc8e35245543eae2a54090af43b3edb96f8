@@ -1,0 +1,9 @@
+
+f	java:S116"RRename this field "pc_code" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ç­d
+s	java:S116"YRename this field "pc_description" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(íè‘›ÿÿÿÿÿ
+g	java:S116"RRename this field "pc_rate" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(™÷
+i	java:S116"TRename this field "pc_excess" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ŒÈãë
+p	java:S116"[Rename this field "pc_excess_amount" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Åİâª
+q	java:S116"WRename this field "pc_tax_cover" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‰ —¿üÿÿÿÿ
+o	java:S116""URename this field "pc_cal_seq" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¿£´²ûÿÿÿÿ
+m	java:S116%"YRename this field "pc_event_limit" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ø¬J
