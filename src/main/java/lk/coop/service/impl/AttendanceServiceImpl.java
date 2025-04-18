@@ -9,18 +9,23 @@ import lk.coop.enums.Status;
 import lk.coop.repository.AttendanceRepository;
 import lk.coop.service.AttendanceService;
 
-import org.apache.commons.beanutils.ConvertUtils;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -77,6 +82,21 @@ Attendance updated=attendanceRepository.save(attendance);
     }
 
     @Override
+    public List<Attendance> findByDateBetween(String fromDate, String toDate) {
+        // Assuming your repository method is named findByDateBetween
+        Sort sort = Sort.by(Sort.Direction.ASC, "date");
+        return attendanceRepository.findByDateBetween(fromDate, toDate,sort);
+    }
+
+    @Override
+    public List<Attendance> findByEpfAndDateBetween(String epf,String fromDate, String toDate) {
+        // Assuming your repository method is named findByDateBetween
+        Sort sort = Sort.by(Sort.Direction.ASC, "date");
+        return attendanceRepository.findByEpfAndDateBetween( epf,fromDate, toDate,sort);
+    }
+
+
+    @Override
     public List<AttendanceResponse> getAll() {
 
         return  attendanceRepository.findAll()
@@ -118,7 +138,7 @@ Attendance updated=attendanceRepository.save(attendance);
                     Message.RecipientType.TO,
                     InternetAddress.parse("praneethrangana777@gmail.com")
             );
-            message.setSubject("Appointment");
+            message.setSubject("Notification");
             message.setText("Dear Sir,"
                     + "\n\n EPF : "+epf+"\n\n"
                             + "\n\n Date : "+date
@@ -151,6 +171,9 @@ Attendance got=attendanceRepository.findById(id).orElse(null);
         return  1;
     }
 
+
+
+
 private static AttendanceResponse convert(Attendance attendance){
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         AttendanceResponse typeResponse=new AttendanceResponse();
@@ -161,12 +184,159 @@ typeResponse.setLocation(attendance.getLocation());
 typeResponse.setTimee(attendance.getTimee());
         typeResponse.setId(attendance.getId());
     typeResponse.setDrStatus(attendance.getDr_status());
-        typeResponse.setCreatedBy(attendance.getCreatedBy());
-        typeResponse.setCreatedDateTime(sdf.format(attendance.getCreatedDateTime()));
-        typeResponse.setModifiedBy(attendance.getModifiedBy());
-        typeResponse.setModifiedDateTime(sdf.format(attendance.getModifiedDateTime()));
+
+            typeResponse.setCreatedBy(attendance.getCreatedBy());
+            //typeResponse.setCreatedDateTime(sdf.format(attendance.getCreatedDateTime()));
+    typeResponse.setCreatedDateTime((attendance.getCreatedDateTime()));
+
+    typeResponse.setModifiedBy(attendance.getModifiedBy());
+            typeResponse.setModifiedDateTime((attendance.getModifiedDateTime()));
+
        typeResponse.setIsDeleted(attendance.getIsDeleted());
     typeResponse.setStatus(attendance.getStatus());
 return typeResponse;
     }
+
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Override
+    public File printappoinmentall(String epf,String fromDate, String toDate ) {
+
+        File pdf = null;
+        try {
+            File file = new File("C:\\Users\\HP\\Desktop\\jobs.jrxml");
+//////////////////////////////
+
+
+            HashMap map1 = new HashMap();
+            ArrayList<HashMap> al = new ArrayList<>();
+
+            Connection co = null;
+            try {
+
+
+                co = jdbc.con();
+                Statement st1 = co.createStatement();
+              //  String sql = "SELECT a.id,a.consult_id,a.country_id ,a.job_id,a.time_range,a.apply_date,a.approve,cs.name,c.name,j.job_type,se.name FROM the_job.appointment a inner join consultant cs on cs.id=a.consult_id inner join country c on c.id=a.country_id inner join job_type j on j.id=a.job_id inner join seeker se on se.id=a.seeker_id  order by a.apply_date desc";
+                String sql = "SELECT * FROM drunken_drive.attendance where epf='"+epf+"' and date between '"+fromDate+"' and '"+toDate+"'  order by date desc";
+
+
+                ResultSet r = st1.executeQuery(sql);
+               // List<AddappointmentconResponse> unlogtot = new ArrayList<>();
+                // List<PeDdctbleTypeRange> peDdctbleTypeRanges = new ArrayList<>();
+                System.out.println(sql);
+
+                while (r.next()) {
+
+                    HashMap<String, Object> hashMap = new HashMap();
+                    hashMap.put("epf", r.getString("epf"));
+                    hashMap.put("date", r.getString("date"));
+                    hashMap.put("time", r.getString("timee"));
+                       String type = "";
+
+                    hashMap.put("status", type);
+                    al.add(hashMap);
+                }
+                JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(al);
+
+
+                JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+                //  JasperPrint print = JasperFillManager.fillReport(jasperReport, map1, new JREmptyDataSource());
+                JasperPrint print = JasperFillManager.fillReport(jasperReport, map1, dataSource);
+
+                String var10000 = System.getProperty("user.home");
+
+                String filepath = "C://Users//HP//Desktop//icbt//drunk drive(final)//final//crud//src//assets//" + "123" + ".pdf";
+
+                JasperExportManager.exportReportToPdfFile(print, filepath);
+                pdf = new File(filepath);
+                System.out.println(map1);
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return pdf;
+
+
+    }
+
+ /////////////////////////////
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Override
+    public File printappoinment(String fromDate, String toDate) {
+
+        File pdf = null;
+        try {
+            File file = new File("C:\\Users\\HP\\Desktop\\jobs.jrxml");
+//////////////////////////////
+
+
+            HashMap map1 = new HashMap();
+            ArrayList<HashMap> al = new ArrayList<>();
+
+            Connection co = null;
+            try {
+
+
+                co = jdbc.con();
+                Statement st1 = co.createStatement();
+                //  String sql = "SELECT a.id,a.consult_id,a.country_id ,a.job_id,a.time_range,a.apply_date,a.approve,cs.name,c.name,j.job_type,se.name FROM the_job.appointment a inner join consultant cs on cs.id=a.consult_id inner join country c on c.id=a.country_id inner join job_type j on j.id=a.job_id inner join seeker se on se.id=a.seeker_id  order by a.apply_date desc";
+                String sql = "SELECT * FROM drunken_drive.attendance where  date between '"+fromDate+"' and '"+toDate+"'  order by date,epf desc";
+
+
+                ResultSet r = st1.executeQuery(sql);
+                // List<AddappointmentconResponse> unlogtot = new ArrayList<>();
+                // List<PeDdctbleTypeRange> peDdctbleTypeRanges = new ArrayList<>();
+                System.out.println(sql);
+
+                while (r.next()) {
+
+                    HashMap<String, Object> hashMap = new HashMap();
+                    hashMap.put("epf", r.getString("epf"));
+                    hashMap.put("date", r.getString("date"));
+                    hashMap.put("time", r.getString("timee"));
+                    String type = "";
+
+                  //  hashMap.put("status", type);
+                    al.add(hashMap);
+                }
+                JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(al);
+
+
+                JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+                //  JasperPrint print = JasperFillManager.fillReport(jasperReport, map1, new JREmptyDataSource());
+                JasperPrint print = JasperFillManager.fillReport(jasperReport, map1, dataSource);
+
+                String var10000 = System.getProperty("user.home");
+
+                String filepath = "C://Users//HP//Desktop//icbt//drunk drive(final)//final//crud//src//assets//" + "1234" + ".pdf";
+
+                JasperExportManager.exportReportToPdfFile(print, filepath);
+                pdf = new File(filepath);
+                System.out.println(map1);
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return pdf;
+
+
+    }
+
+
+
+
 }

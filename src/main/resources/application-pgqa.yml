@@ -3,7 +3,9 @@ spring:
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/drunken_drive
     username: root
+    #password: StrongPassword123!
     password: root
+
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       schema: drunken_drive
@@ -28,6 +30,7 @@ jwt:
     string: Authorization
 
 server:
+  # port: 501
   port: 8085
 
 intermediary:

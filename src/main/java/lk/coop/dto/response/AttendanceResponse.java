@@ -22,11 +22,11 @@ private String timee;
 
 private String createdBy;
  
-private String createdDateTime;
+private Date createdDateTime;
  
 private String modifiedBy;
  
-private String modifiedDateTime;
+private Date modifiedDateTime;
 private Deleted isDeleted;
 private Status status;
 private String drStatus;
